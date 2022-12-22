@@ -1,0 +1,41 @@
+#pragma once
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <conio.h>
+
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+#include <conio.h>
+
+/*
+Функция userInput
+Проверки ввода типа int
+Ввод: -
+Вывод: переменная типа int
+*/
+
+class evaluationFunction
+{
+public:
+	evaluationFunction(unsigned int n); // конструктор класса evaluationFunction| параметры: размер поля n*n
+	~evaluationFunction();				// деструктор класса evaluationFunction 
+	int userIntInput();
+	int evalFunc();						// функция сравнения
+	void printField();					// функция вывода игрового поля в консоль поля
+	void debuggingInformation();		// функция вывода отладочной информации в консоль
+	void randomField();					// функция случайного заполенения поля
+	void move();
+	bool win();
+	int** getNowField();
+private:
+	int white;							// число белых шашек(счётчик)
+	int black;							// число чёрных шашек(счётчик)
+	int** field;						// указатель на начала двумерного массива поля
+	unsigned int N;						// размера КВАДРАТНОГО поля
+	int res;							// результат работы оценочной функции
+	bool whiteMove;
+	bool whiteWin;
+	bool blackWin;
+};
