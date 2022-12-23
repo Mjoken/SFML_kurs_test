@@ -6,6 +6,9 @@ using namespace sf;
 
 int main()
 {
+	evaluationFunction::pos* Cturn;
+	int alpha = -9999;
+	int beta = 9999;
 	const int gridSize = 8;		// размер поля
 	const int w = 32;				// размер текстуры клетки поля
 	int posX{}, posY{};
@@ -24,7 +27,7 @@ int main()
 	Game.randomField();
 	int** tempField = Game.getNowField();
 	Game.printField();
-	Game.evalFunc();
+	Game.evalFunc(Game.getNowField());
 
 
 	RenderWindow app(VideoMode(gridSize *w, gridSize * w), "The Game!", Style::Titlebar | Style::Close);
@@ -58,9 +61,6 @@ int main()
 	// Главный цикл приложения: выполняется, пока открыто окно
 	while (app.isOpen())
 	{
-		t3 = c3.getElapsedTime();
-		if (t3.asSeconds() >= 5) {
-			c3.restart();
 			for (int i = 0; i < gridSize; i++) 
 			{
 				for (int j = 0; j < gridSize; j++)
@@ -75,11 +75,12 @@ int main()
 						else if (gridView[i][j] == 3 || gridView[i][j] == 5) {
 							tempField[i][j] = 1;
 						}
+						/////////////////////////////////////////////////////
 						if (tempField[i][j] == 1) {
 							if (j + 1 < gridSize && tempField[i][j + 1]==-1) {
 								count += 1;
 							}
-							if (j + 1 >= 0 && tempField[i][j - 1]==-1) {
+							if (j - 1 >= 0 && tempField[i][j - 1]==-1) {
 								count += 1;
 							}
 							if (i + 1 < gridSize && tempField[i + 1][j]==-1) {
@@ -94,7 +95,7 @@ int main()
 							if (j + 1 < gridSize && tempField[i][j + 1] == 1) {
 								count += 1;
 							}
-							if (j + 1 >= 0 && tempField[i][j - 1] == 1) {
+							if (j - 1 >= 0 && tempField[i][j - 1] == 1) {
 								count += 1;
 							}
 							if (i + 1 < gridSize && tempField[i + 1][j] == 1) {
@@ -107,9 +108,34 @@ int main()
 						}
 				}
 			}
+			t3 = c3.getElapsedTime();
+		if (t3.asSeconds() >= 7) {
+			c3.restart();
 			Game.setNowField(tempField);
 			Game.printField();
 		}
+
+		if (!whiteTurn) {
+			Cturn=Game.minmax(tempField, alpha, beta, whiteTurn);
+			std::cout << Cturn->CX << "| " << Cturn->CY << std::endl;
+			std::cout << Cturn->X << "| " << Cturn->Y << std::endl;
+			tempField[Cturn->CX][Cturn->CY] = 0;
+			tempField[Cturn->X][Cturn->Y] = -1;
+			if (gridView[Cturn->CX][Cturn->CY] == 2) {
+				gridView[Cturn->CX][Cturn->CY] = 1;
+			}
+			if (gridView[Cturn->CX][Cturn->CY] == 4) {
+				gridView[Cturn->CX][Cturn->CY] = 0;
+			}
+			if (gridView[Cturn->X][Cturn->Y] == 1) {
+				gridView[Cturn->X][Cturn->Y] = 2;
+			}
+			if (gridView[Cturn->X][Cturn->Y] == 0) {
+				gridView[Cturn->X][Cturn->Y] = 4;
+			}
+			whiteTurn = true;
+		}
+
 		Vector2i pixelPos = Mouse::getPosition(app);//забираем коорд курсора
 		Vector2f pos = app.mapPixelToCoords(pixelPos);//переводим их в игровые (уходим от коорд окна)
 		//std::cout << pos.x << "\n";//смотрим на Х,которая преобразовалась в мировые координаты
@@ -122,7 +148,7 @@ int main()
 			if (event.type == Event::Closed)
 				// тогда закрываем его
 				app.close();
-			if (event.type == Event::MouseButtonPressed) {
+			if (event.type == Event::MouseButtonPressed && whiteTurn == true) {
 				if (event.key.code == Mouse::Left && turn.chose == false) {
 					if ((gridView[posX][posY] == 2 || gridView[posX][posY] == 4) && whiteTurn == false) { // black check
 						if (gridView[posX][posY] == 2) { turn.check = 2; }
@@ -142,7 +168,7 @@ int main()
 					}
 				}
 			}
-			if (event.type == Event::KeyPressed) {
+			if (event.type == Event::KeyPressed && whiteTurn==true) {
 				if (event.key.code == Keyboard::Escape && turn.chose == true) {
 					gridView[turn.pX][turn.pY] = turn.check;
 					turn.chose = false;
@@ -226,7 +252,9 @@ int main()
 
 			}
 		}
-
+		if (Game.win()) {
+			std::cout << "You are LOSE!" << std::endl;
+		}
 		// Устанавливаем белый фон
 		app.clear(Color::White);
 		for (int i = 0; i < gridSize; i++) {
