@@ -29,6 +29,7 @@ public:
 	void move();
 	bool win();
 	int** getNowField();
+	void setNowField(int** arr);
 private:
 	int white;							// число белых шашек(счётчик)
 	int black;							// число чёрных шашек(счётчик)

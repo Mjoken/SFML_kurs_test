@@ -63,7 +63,7 @@ void evaluationFunction::printField() {
 	for (size_t i{}; i < N; i++) {
 		std::cout << std::setw(2) << "[" << i << "]" << "|";
 		for (size_t j{}; j < N; j++) {
-			std::cout << std::setw(3) << field[i][j] << " ";
+			std::cout << std::setw(3) << field[j][i] << " ";
 		}
 		std::cout << std::endl;
 	}
@@ -215,6 +215,11 @@ bool evaluationFunction::win() {
 int** evaluationFunction::getNowField()
 {
 	return field;
+}
+void evaluationFunction::setNowField(int** arr)
+{
+	field = arr;
+	return;
 }
 /* Деструктор */
 evaluationFunction::~evaluationFunction()
